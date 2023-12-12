@@ -41,6 +41,8 @@ jobs:
     <<: *defaults
     steps: &default_steps
       - checkout
+      - attach_workspace:
+          at: /tmp
       - restore_cache:
           keys:
             - << parameters.restore_cache_key_1 >>
@@ -65,6 +67,9 @@ jobs:
                   path: /tmp/test-artifacts
                   destination: test-artifacts
               - store_artifacts:
+                  path: /tmp/failed_tests
+                  destination: failed_tests
+              - store_artifacts:
                   path: /tmp/test-results
                   destination: raw-test-output
               - store_test_results:
@@ -79,7 +84,7 @@ jobs:
             type: string
         parallelism:
             type: integer
-            default: 3
+            default: 8
     environment:
       <<: *environment
       DB: postgres
@@ -101,7 +106,7 @@ jobs:
             type: string
         parallelism:
             type: integer
-            default: 3
+            default: 8
     environment:
       <<: *environment
       DB: mysql
@@ -121,6 +126,11 @@ jobs:
       - checkout
       - attach_workspace:
           at: /tmp/workspace
+      - run:
+          name: Merge coverage reports
+          command: 
+              bundle check || bundle install &&
+              bundle exec rake coverage:report
       - run:
           name: Allow executing given file
           command: chmod +x << parameters.run_file_path >>
@@ -201,4 +211,5 @@ workflows:
           redis_image: circleci/redis:6.2-alpine
           run_file_path: ./bin/tests_coverage.sh
           requires:
-              - tests_ruby_3_2_rails_7_0_mysql          
+              - tests_ruby_3_2_rails_7_0_mysql    
+

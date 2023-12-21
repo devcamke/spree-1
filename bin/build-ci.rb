@@ -106,7 +106,9 @@ class Project
   # @return [Boolean]
   #   the success of the tests
   def run_tests
-    system("bundle exec rspec #{rspec_arguments.join(' ')}")
+    report_dir = ENV['CIRCLE_TEST_REPORTS']
+    custom_name = name
+    system("circleci tests glob \"**/*_spec.rb\" | circleci tests run --command=\"xargs bundle exec rspec #{rspec_arguments.join(' ')}\"")
   end
 
   def rspec_arguments(custom_name = name)
@@ -154,10 +156,13 @@ class Project
       log("Building: #{project.name}")
       project.pass?
     end
+
     log("Finished running #{suffix}")
 
     projects.zip(builds).each do |project, build|
+
       log("- #{project.name} #{build ? 'SUCCESS' : 'FAILURE'}")
+
     end
 
     builds.all?
@@ -168,7 +173,7 @@ class Project
   #
   # @return [Array<Project>]
   def self.current_projects
-    NODE_INDEX.step(ALL.length - 1, NODE_TOTAL).map(&ALL.method(:fetch))
+    ALL
   end
   private_class_method :current_projects
 

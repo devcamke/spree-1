@@ -6,7 +6,7 @@ module Spree
       has_one_attached :attachment
     end
 
-    VALID_CONTENT_TYPES = ['image/png', 'image/x-icon', 'image/vnd.microsoft.icon'].freeze
+    VALID_CONTENT_TYPES = ['image/png', 'image/vnd.microsoft.icon'].freeze
 
     validates :attachment,
               content_type: VALID_CONTENT_TYPES,

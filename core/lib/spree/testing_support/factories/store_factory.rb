@@ -18,8 +18,9 @@ FactoryBot.define do
 
     trait :with_favicon do
       transient do
+        Marcel::MimeType.extend 'image/x-icon', extensions: %w( ico )
         filepath { Spree::Core::Engine.root.join('spec', 'fixtures', 'favicon.ico') }
-        image_type { 'image/vnd.microsoft.icon' }
+        image_type { 'image/x-icon' }
       end
 
       favicon_image do

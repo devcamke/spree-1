@@ -18,8 +18,9 @@ FactoryBot.define do
 
     trait :with_favicon do
       transient do
-        filepath { Spree::Core::Engine.root.join('spec', 'fixtures', 'favicon.ico') }
-        image_type { 'image/x-icon' }
+        image = 'favicon.png'
+        filepath { Spree::Core::Engine.root.join('spec', 'fixtures', image) }
+        image_type { Marcel::MimeType.for name: image }
       end
 
       favicon_image do
